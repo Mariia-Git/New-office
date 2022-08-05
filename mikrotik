@@ -1,0 +1,148 @@
+ip_addr1 = input('Enter the IP address and mask for the VPN pool addresses in the format z.z.z.z/y (example 10.9.7.0/28): ')
+#Enter the subnet for the pool
+addr, mask = ip_addr.split('/')
+octet_1, octet_2, octet_3, octet_4 = addr.split(".") #input ip address of router
+ip_addr2 = input('Enter the IP address and mask for the VPN pool addresses in the format z.z.z.z/y (example 10.9.7.0/28): ')
+#Enter the subnet for the pool
+addr, mask = ip_addr.split('/')
+octet_1, octet_2, octet_3, octet_4 = addr.split(".") #input ip address of router
+ip_addr2 = input('Enter the IP address and mask for the VPN pool addresses in the format z.z.z.z/y (example 10.9.7.0/28): ')
+#Enter the subnet for the pool
+addr, mask = ip_addr.split('/')
+octet_1, octet_2, octet_3, octet_4 = addr.split(".") #input ip address of router
+frx_local_gateway = input('Введите ip-address шлюза')
+
+interfaces1 = input('Введите имя интерфейса1')
+interfaces2 = input('Введите имя интерфейса1')
+interfaces_type = input('Введите тип (бридж или т.д.')
+name = input('Введите имя интерфейса')
+
+#+++++++++++++Everything below can be copied to the mikrotik config+++++++++++++
+
+
+/interface
+add name=interfaces_type
+add frame-types=admit-only-vlan-tagged
+ingress-filtering=no
+name=
+vlan-filtering=yes
+
+/ppp profile
+add change-tcp-mss=yes dns-server={local_addr} local-address={local_addr} name=l2tp remote-address=l2tp_pool
+
+#+++++++++++++ipsec PASSWOR is {ipsec_pwd}+++++++++++++
+/interface l2tp-server server
+set authentication=mschap2 ipsec-secret={ipsec_pwd} use-ipsec=yes
+
+
+/ip firewall filter
+add action=accept chain=input comment=L2tp_ports_access dst-port=500,1701,4500 in-interface=ether1 protocol=udp
+add action=accept chain=input comment=winbox_access dst-port=8921 in-interface=ether1 protocol=tcp
+add action=accept chain=input connection-state=established in-interface=ether1
+add action=accept chain=input connection-state=related in-interface=ether1
+add action=drop chain=input disabled=yes in-interface=ether1
+
+/ip firewall nat
+add action=masquerade chain=srcnat out-interface=ether1
+
+/ip service
+set telnet disabled=yes
+set ftp disabled=yes
+set www disabled=yes
+set ssh disabled=yes
+set api disabled=yes
+set api-ssl disabled=yes
+
+/ppp secret
+
+#2.Creating VPN in l2TP
+server_ip_addr = input('Введите адрес ВПН в формате x.x.x.x: ')
+client_prefix = input('Введите имя пользователей: ') # Input user`s name
+count_of_clients = input('Введите количество  VPN пользователей: ') # Enter the number of VPN clients
+ip_addr = input('Введите адрес и маску VPN в формате ++++ z.z.z.z/y (example 10.9.7.0/28): ') #Enter the subnet for the pool
+addr, mask = ip_addr.split('/')
+octet_1, octet_2, octet_3, octet4 = addr.split(".")
+
+import random
+import string
+
+def generate_password(length):
+    '''
+    The function generates a random password from numbers and letters of lower and upper case
+     :param length: Password length
+     :return: Returns already prepared password
+    '''
+    letters_and_digits = string.ascii_letters + string.digits
+    rand_string = ''.join(random.sample(letters_and_digits, length))
+    return rand_string
+
+from random import randint #Connecting the random number generator
+
+ipsec_pwd = '1S260zdMV9571E930DH52DDK'
+print(f'\n Password to ipSec {ipsec_pwd}')
+local_addr = octet_1+'.'+octet_2+'.'+octet_3+'.'+'1'
+
+
+name_of_credentials_file = f'credentials_{client_prefix}.txt'
+credentials_file = open(name_of_credentials_file, 'w')
+credentials_file.write(f'Address of VPN server {server_ip_addr}\n\n')
+
+#Create Sheets with passwords and logins
+list_of_value = []
+list_of_keys = []
+for cl_number in range(1, int(count_of_clients)+1):
+    password = generate_password(randint(10,16))
+    username = client_prefix+str(cl_number)
+    list_of_value.append(password)
+    list_of_keys.append(username)
+    credentials_file.write(f'User name of VPN:  {username}\t Password of VPN:  {password}\n')
+credentials_file.close()
+
+#Connecting logins and passwords
+new_str = ''
+for cl3_number in range(0, int(count_of_clients)):
+    user_conf = f'add name={list_of_keys[int(cl3_number)]} password={list_of_value[cl3_number]} profile=l2tp\n'
+    #print(user_conf)
+    new_str += user_conf
+#print(new_str)
+
+name_of_config_file = f'mkt_config_{client_prefix}.txt'
+config_file = open(name_of_config_file, 'w')
+config_file.write(f'''
+#+++++++++++++Everything below can be copied to the mikrotik config+++++++++++++
+
+
+/ip pool
+add name=l2tp_pool ranges={ip_addr}
+
+/ppp profile
+add change-tcp-mss=yes dns-server={local_addr} local-address={local_addr} name=l2tp remote-address=l2tp_pool
+
+#+++++++++++++ipsec PASSWOR is {ipsec_pwd}+++++++++++++
+/interface l2tp-server server
+set authentication=mschap2 ipsec-secret={ipsec_pwd} use-ipsec=yes
+
+
+/ip firewall filter
+add action=accept chain=input comment=L2tp_ports_access dst-port=500,1701,4500 in-interface=ether1 protocol=udp
+add action=accept chain=input comment=winbox_access dst-port=8921 in-interface=ether1 protocol=tcp
+add action=accept chain=input connection-state=established in-interface=ether1
+add action=accept chain=input connection-state=related in-interface=ether1
+add action=drop chain=input disabled=yes in-interface=ether1
+
+/ip firewall nat
+add action=masquerade chain=srcnat out-interface=ether1
+
+/ip service
+set telnet disabled=yes
+set ftp disabled=yes
+set www disabled=yes
+set ssh disabled=yes
+set api disabled=yes
+set api-ssl disabled=yes
+
+/ppp secret
+{new_str}
+''')
+
+config_file.close()
