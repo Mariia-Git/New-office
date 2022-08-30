@@ -1,0 +1,239 @@
+hostname = input('Enter hostmane')
+default_gateway = input('Enter Ip address default gateway formate x.x.x.x: ')
+ip_addr = input('Enter IP address and mask of host in formate z.z.z.z/y (example 10.9.7.0/24): ')
+#Enter the subnet for the pool
+addr, mask = ip_addr.split('/')
+octet_1, octet_2, octet_3, octet_4 = addr.split(".")
+ports = input('Enter number of ports (24,26,28,50) ')
+if ports == '50':
+name_of_config_file = f'HP_config_{hostname}+50.txt'
+config_file= open(name_of_config_file, 'w')
+config_file.write(f'''
+#+++++++++++++ HP-Configure 50 ports +++++++++++++
+
+        config
+        hostname "{hostname}"
+        timesync sntp
+        sntp unicast
+        sntp server priority 1  192.168.1.1
+        time timezone 120
+        ip default-gateway {default_gateway}
+        snmp-server community "public" unrestricted
+        vlan 10
+           name "VLAN-10"
+           untagged 1-48
+           tagged 49-52
+           ip address  {ip_addr}
+           exit
+        vlan 20
+           name "VLAN-20"
+           tagged 49-52
+           exit
+        vlan 30
+           name "VLAN-30"
+           untagged 49
+           tagged 50-52
+           exit
+        vlan 40
+           name "VLAN-40"
+           tagged 49-52
+           no ip address
+           exit
+        vlan 1
+           name "DEFAULT_VLAN"
+           no untagged 1-52
+           no ip address
+           exit 
+        password manage user backup
+        bbiwy984
+        bbiwy984
+        password operator user admin
+        ForexPWD349
+        ForexPWD349
+        no tftp server
+        loop-protect 1-48
+        loop-protect mode vlan
+        loop-protect disable-timer 60
+        crypto key generate ssh
+        ip ssh
+        wr mem
+        ''')
+
+    config_file.close()
+    print()
+
+if ports == '24':
+name_of_config_file = f'HP_config_{hostname}+24.txt'
+config_file = open(name_of_config_file, 'w')
+config_file.write(f'''
+#+++++++++++++ HP-Configure 24 ports +++++++++++++
+
+        config
+        hostname "{hostname}"
+        timesync sntp
+        sntp unicast
+        sntp server priority 1  10.0.241.1
+        time timezone 120
+        ip default-gateway {default_gateway}
+        snmp-server community "public" unrestricted
+        vlan 10
+            name "FRX_10"
+            untagged 1-24
+            tagged 25-28
+            ip address  {ip_addr}
+            exit
+        vlan 20
+            name "FRX_20"
+            tagged 25-28
+            exit
+        vlan 30
+            name "unifi_manage"
+            untagged 25
+            tagged 26-28
+            exit
+        vlan 40
+            name "wifi-p"
+            tagged 25-28
+            exit
+        vlan 1
+            name "DEFAULT_VLAN"
+            no untagged 1-28
+            no ip address
+            exit 
+        password manage user backup
+        bbiwy984
+        bbiwy984
+        password operator user admin
+        ForexPWD349
+        ForexPWD349
+        no tftp server
+        loop-protect 1-21
+        loop-protect mode vlan
+        loop-protect disable-timer 60
+        crypto key generate ssh
+        ip ssh
+        wr mem
+        ''')
+    config_file.close()
+    print()
+
+if ports == '28':
+name_of_config_file = f'HP_config_{hostname}+28.txt'
+config_file = open(name_of_config_file, 'w')
+config_file.write(f'''
+#+++++++++++++ HP-Configure 28 ports +++++++++++++
+
+        config
+        hostname "{hostname}"
+        timesync sntp
+        sntp unicast
+        sntp server priority 1  10.0.241.1
+        time timezone 120
+        ip default-gateway {default_gateway}
+        snmp-server community "public" unrestricted
+        vlan 10
+           name "FRX-10"
+           tagged 25-28
+           ip address  {ip_addr}
+           exit
+        vlan 20
+           name "FRX-20"
+           tagged 25-28
+           no ip address
+           exit
+        vlan 30
+           name "unifi_manage"
+           untagged 25
+           tagged 26-28
+           exit
+        vlan 40
+           name "WIFI-P"
+           tagged 25-28
+           no ip address
+           exit
+        vlan 1
+           name "DEFAULT_VLAN"
+           no untagged 1-28
+           no ip address
+           exit 
+        password manage user backup
+        bbiwy984
+        bbiwy984
+        password operator user admin
+        ForexPWD349
+        ForexPWD349
+        no tftp server
+        loop-protect 1-25
+        loop-protect mode vlan
+        loop-protect disable-timer 60
+        crypto key generate ssh
+        ip ssh
+        wr mem
+        ''')
+    config_file.close()
+    print()
+
+if ports == '26':
+name_of_config_file = f'HP_config_{hostname}+26.txt'
+config_file = open(name_of_config_file, 'w')
+config_file.write(f'''
+#+++++++++++++ HP-Configure 26 ports +++++++++++++
+
+        config
+        hostname "{hostname}"
+        timesync sntp
+        sntp unicast
+        sntp server priority 1  10.0.241.1
+        time timezone 120
+        ip default-gateway {default_gateway}
+        snmp-server community "public" unrestricted
+        vlan 10
+           name "FRX-10"
+           tagged 23-26
+           ip address  {ip_addr}
+           exit
+        vlan 20
+           name "FRX-20"
+           tagged 23-26
+           no ip address
+           exit
+        vlan 30
+           name "unifi_manage"
+           tagged 24-26
+           untagged 23
+           exit
+        vlan 40
+           name "wifi-p"
+           tagged 23-26
+           no ip address
+           exit
+        vlan 1
+           name "DEFAULT_VLAN"
+           no untagged 1-26
+           no ip address
+           exit 
+        password manage user backup
+        bbiwy984
+        bbiwy984
+        password operator user admin
+        ForexPWD349
+        ForexPWD349
+        no tftp server
+        loop-protect 1-23
+        loop-protect mode vlan
+        loop-protect disable-timer 60
+        crypto key generate ssh
+        ip ssh
+        wr mem
+        ''')
+    config_file.close()
+    print()
+
+else:
+name_of_config_file = f'Error.txt'
+config_file = open(name_of_config_file, 'w')
+config_file.write(f'''
+Not correct number of ports
+''')
+config_file.close()
+print()
