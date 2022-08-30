@@ -44,12 +44,12 @@ config_file.write(f'''
            no untagged 1-52
            no ip address
            exit 
-        password manage user backup
-        bbiwy984
-        bbiwy984
-        password operator user admin
-        ForexPWD349
-        ForexPWD349
+        password manage user user
+        123456789
+        123456789        
+        password operator user manager
+        123456789
+        123456789
         no tftp server
         loop-protect 1-48
         loop-protect mode vlan
@@ -100,12 +100,12 @@ config_file.write(f'''
             no untagged 1-28
             no ip address
             exit 
-        password manage user backup
-        bbiwy984
-        bbiwy984
-        password operator user admin
-        ForexPWD349
-        ForexPWD349
+        password manage user user
+        123456789
+        123456789        
+        password operator user manager
+        123456789
+        123456789
         no tftp server
         loop-protect 1-21
         loop-protect mode vlan
@@ -156,12 +156,12 @@ config_file.write(f'''
            no untagged 1-28
            no ip address
            exit 
-        password manage user backup
-        bbiwy984
-        bbiwy984
-        password operator user admin
-        ForexPWD349
-        ForexPWD349
+        password manage user user
+        123456789
+        123456789        
+        password operator user manager
+        123456789
+        123456789
         no tftp server
         loop-protect 1-25
         loop-protect mode vlan
@@ -212,12 +212,12 @@ config_file.write(f'''
            no untagged 1-26
            no ip address
            exit 
-        password manage user backup
-        bbiwy984
-        bbiwy984
-        password operator user admin
-        ForexPWD349
-        ForexPWD349
+         password manage user user
+        123456789
+        123456789        
+        password operator user manager
+        123456789
+        123456789
         no tftp server
         loop-protect 1-23
         loop-protect mode vlan
